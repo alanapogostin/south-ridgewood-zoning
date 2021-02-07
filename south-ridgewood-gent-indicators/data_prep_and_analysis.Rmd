@@ -1,0 +1,115 @@
+---
+title: "south-ridgewood-housing-indicators"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# install.packages(tidycensus)
+# install.packages(tidyverse)
+
+library(tidyverse)
+library(tidycensus)
+
+
+```
+
+## Pulling in ACS indicators for the south ridgewood census block
+```{r}
+# Connecting to my API
+census_api_key("4ce84da33024270337d2c7a57c4b2cbf6bc78f6c")
+
+# Checking out the variable ID's
+v9 <- load_variables(2019, "acs5", cache = TRUE)
+
+## loading the 2019-2015 survey
+south_ridgewood_2019 <- get_acs(
+  geography = "tract",
+  state = "NY",
+  county = (081),
+  tract = c(553, 555, 557, 559),
+  year = 2019,
+  survey = "acs5",
+  output = "wide",
+  geometry = FALSE,
+  variables = c(
+    "gross_rent_med" = "B25064_001", # median gross rent
+    "hh_inc_med" = "B19013_001", # median household income
+    "rent_burden_med" = "B25071_001", # median rent burden
+    "pov_pct" = "C17002_001", # poverty rate
+    "hh_size_avg" = "B25010_001", # average hosehold size
+    "occ_units" = "B25003_001", # total occupied units
+    "occ_renter_units" = "B25003_003", # renter occupied units
+    "vac_forrent_units" = "B25004_002", # vacant units for rent
+    "vac_rented_units" = "B25004_003", # vacant units rented
+    "occ_owner"= "B07013_002" # owner occupied
+  )
+) %>%
+  filter(GEOID == c(36081055500, 
+                    36081055300,
+                    36081055700,
+                    36081055900))
+
+```
+```{r}
+## loading the 2019-2015 survey
+census_19 <- get_acs(
+  geography = "tract",
+  state = "NY",
+  county = (081),
+  tract = c(553, 555, 557, 559),
+  year = 2019,
+  survey = "acs5",
+  output = "wide",
+  geometry = FALSE,
+  variables = c(
+    "gross_rent_med" = "B25064_001", # median gross rent
+    "hh_inc_med" = "B19013_001", # median household income
+    "rent_burden_med" = "B25071_001", # median rent burden
+    "pov_pct" = "C17002_001", # poverty rate
+    "hh_size_avg" = "B25010_001", # average hosehold size
+    "occ_units" = "B25003_001", # total occupied units
+    "occ_renter_units" = "B25003_003", # renter occupied units
+    "vac_forrent_units" = "B25004_002", # vacant units for rent
+    "vac_rented_units" = "B25004_003", # vacant units rented
+    "occ_owner"= "B07013_002" # owner occupied
+  )
+) %>%
+  filter(GEOID == c(36081055500, 
+                    36081055300,
+                    36081055700,
+                    36081055900))
+```
+
+```{r}
+## loading the 2014-200 survey
+census_14 <- get_acs(
+  geography = "tract",
+  state = "NY",
+  county = (081),
+  tract = c(553, 555, 557, 559),
+  year = 2014,
+  survey = "acs5",
+  output = "wide",
+  geometry = FALSE,
+  variables = c(
+    "gross_rent_med" = "B25064_001", # median gross rent
+    "hh_inc_med" = "B19013_001", # median household income
+    "rent_burden_med" = "B25071_001", # median rent burden
+    "pov_pct" = "C17002_001", # poverty rate
+    "hh_size_avg" = "B25010_001", # average hosehold size
+    "occ_units" = "B25003_001", # total occupied units
+    "occ_renter_units" = "B25003_003", # renter occupied units
+    "vac_forrent_units" = "B25004_002", # vacant units for rent
+    "vac_rented_units" = "B25004_003", # vacant units rented
+    "occ_owner"= "B07013_002" # owner occupied
+  )
+) %>%
+  filter(GEOID == c(36081055500, 
+                    36081055300,
+                    36081055700,
+                    36081055900))
+```
+
+
