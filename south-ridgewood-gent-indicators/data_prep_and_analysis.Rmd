@@ -46,49 +46,20 @@ south_ridgewood_2019 <- get_acs(
     "occ_owner"= "B07013_002" # owner occupied
   )
 ) %>%
-  filter(GEOID == c(36081055500, 
+  mutate(year = 2019) %>%
+  filter(GEOID %in% c(36081055500,
                     36081055300,
                     36081055700,
                     36081055900))
 
 ```
-```{r}
-## loading the 2019-2015 survey
-census_19 <- get_acs(
-  geography = "tract",
-  state = "NY",
-  county = (081),
-  tract = c(553, 555, 557, 559),
-  year = 2019,
-  survey = "acs5",
-  output = "wide",
-  geometry = FALSE,
-  variables = c(
-    "gross_rent_med" = "B25064_001", # median gross rent
-    "hh_inc_med" = "B19013_001", # median household income
-    "rent_burden_med" = "B25071_001", # median rent burden
-    "pov_pct" = "C17002_001", # poverty rate
-    "hh_size_avg" = "B25010_001", # average hosehold size
-    "occ_units" = "B25003_001", # total occupied units
-    "occ_renter_units" = "B25003_003", # renter occupied units
-    "vac_forrent_units" = "B25004_002", # vacant units for rent
-    "vac_rented_units" = "B25004_003", # vacant units rented
-    "occ_owner"= "B07013_002" # owner occupied
-  )
-) %>%
-  filter(GEOID == c(36081055500, 
-                    36081055300,
-                    36081055700,
-                    36081055900))
-```
 
 ```{r}
-## loading the 2014-200 survey
+## loading the 2014-2010 survey ***NOT ALL THE CENSUS TRACTS ARE THERE**
 census_14 <- get_acs(
   geography = "tract",
   state = "NY",
   county = (081),
-  tract = c(553, 555, 557, 559),
   year = 2014,
   survey = "acs5",
   output = "wide",
@@ -104,12 +75,54 @@ census_14 <- get_acs(
     "vac_forrent_units" = "B25004_002", # vacant units for rent
     "vac_rented_units" = "B25004_003", # vacant units rented
     "occ_owner"= "B07013_002" # owner occupied
-  )
-) %>%
-  filter(GEOID == c(36081055500, 
+  ))%>% mutate(year = 2014) %>%
+  filter(GEOID %in% c(36081055500,
                     36081055300,
                     36081055700,
                     36081055900))
 ```
+```{r}
+## loading the 2009-2005 survey ***NOT ALL THE CENSUS TRACTS ARE THERE**
+census_09 <- get_acs(
+  geography = "tract",
+  state = "NY",
+  county = (081),
+  year = 2019,
+  survey = "acs5",
+  output = "wide",
+  geometry = FALSE,
+  variables = c(
+    "gross_rent_med" = "B25064_001", # median gross rent
+    "hh_inc_med" = "B19013_001", # median household income
+    "rent_burden_med" = "B25071_001", # median rent burden
+    "pov_pct" = "C17002_001", # poverty rate
+    "hh_size_avg" = "B25010_001", # average hosehold size
+    "occ_units" = "B25003_001", # total occupied units
+    "occ_renter_units" = "B25003_003", # renter occupied units
+    "vac_forrent_units" = "B25004_002", # vacant units for rent
+    "vac_rented_units" = "B25004_003", # vacant units rented
+    "occ_owner"= "B07013_002" # owner occupied
+  )) %>%
+  mutate(
+    year = 2009) %>%
+  filter(GEOID %in% c(36081055500,
+                    36081055300,
+                    36081055700,
+                    36081055900))
+```
+```{r}
+# Joining the Two ** CANT USE THIS YET
+census_10_19 <- census_19 %>% 
+  left_join(census_14, by = "GEOID") %>%
+  left_join(census_09, by = "GEOID") 
+```
+```{r}
+# Joining the Two ** CANT USE THIS YET
+census_10_19 <- census_10_19 %>% 
+  rbind(census_19, census_14, census_09, by = c("pov_pctM", "hh_size_avgE", "hh_size_avgM", "occ_unitsE", "occ_unitsM", "occ_renter_unitsE", "occ_renter_unitsM", "vac_forrent_unitsE", "vac_forrent_unitsM", "vac_rented_unitsE", "vac_rented_unitsM", "occ_ownerE", "occ_ownerM", "year"))
+```
+# 2015-2019 Data Wrangling
+```{r}
 
+```
 
