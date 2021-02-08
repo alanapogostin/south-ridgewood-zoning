@@ -124,11 +124,20 @@ census_ <-  census_19 %>%
 ```
 # 2015-2019 Data Wrangling
 ```{r}
-hh_rent_burden <- census_ %>%
-  select("gross_rent_medE", "hh_inc_medE", "rent_burden_medE") %>%
-  group_by("year") %>%
+rent_burden_indc <- census_ %>%
+  select("year","gross_rent_medE", "hh_inc_medE", "rent_burden_medE") %>%
+  group_by(year) %>%
   summarise(gross_rent_med_mean = mean(gross_rent_medE),
             hh_inc_med_mean = mean(hh_inc_medE),
-            rent_burden_med = mean(rent_burden_medE))
+            rent_burden_med = mean(rent_burden_medE),
+            )
+# %>%
+#   mutate(gross_rent_med_change = )
+
+```
+# Gross Rent
+```{r}
+gross_rent_change_df <- rent_burden_indc %>%
+  summarize()
 ```
 
