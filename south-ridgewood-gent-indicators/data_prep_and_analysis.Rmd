@@ -155,8 +155,7 @@ pop_change <- census_ %>%
             )
 gg_pop_change <- ggplot(pop_change, aes(x = year, y = pop_mean)) +
   geom_bar(stat="identity") +
-  scale_y_continuous(labels = scales::percent,
-                     n.breaks = 10) +
+  scale_y_continuous(n.breaks = 10) +
   # geom_text(aes(label=pov_pct_mean), vjust=-0.3, size=3.5)+
   labs(title = "Population of Southern Ridgewood",
        x = "Year",
