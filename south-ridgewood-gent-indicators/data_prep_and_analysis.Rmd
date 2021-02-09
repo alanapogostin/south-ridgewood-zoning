@@ -123,7 +123,7 @@ census_09 <- get_acs(
 ```{r}
 # Joining the Two ** CANT USE THIS YET
 census_ <-  census_19 %>% 
-  bind_rows(census_14, census_09)
+  bind_rows(census_14, census_09) 
 
 write.csv(census_,"/Users/alanapogostin/Desktop/Urban_Planning_Methods/south_ridgewood_census.csv", row.names = FALSE)
 ```
@@ -151,16 +151,19 @@ rent_burden_indc <- rent_burden_indc %>%
 pop_change <- census_ %>%
   select("year","popE") %>%
   group_by(year) %>%
-  summarise(pop_mean = mean(popE)
-            )
-gg_pop_change <- ggplot(pop_change, aes(x = year, y = pop_mean)) +
+  summarise(pop = sum(popE))
+
+gg_pop_change <- ggplot(pop_change, aes(x = year, y = pop)) +
   geom_bar(stat="identity") +
   scale_y_continuous(n.breaks = 10) +
+  scale_x_continuous(label = c(0, 2009, 2014, 2019))+
+  #scale_x_continuous(labels = as.character(year))+
   # geom_text(aes(label=pov_pct_mean), vjust=-0.3, size=3.5)+
   labs(title = "Population of Southern Ridgewood",
        x = "Year",
        y = "Number of Residents") +
   theme_bw()
+
 gg_pop_change
 ```
 
@@ -176,6 +179,7 @@ gg_poverty <- ggplot(poverty, aes(x = year, y = pov_pct_mean)) +
   geom_bar(stat="identity") +
   scale_y_continuous(labels = scales::percent,
                      n.breaks = 10) +
+  scale_x_continuous(label = c(0, 2009, 2014, 2019))+
   # geom_text(aes(label=pov_pct_mean), vjust=-0.3, size=3.5)+
   labs(title = "Poverty Rate in Southern Ridgewood",
        x = "Year",
@@ -184,13 +188,6 @@ gg_poverty <- ggplot(poverty, aes(x = year, y = pov_pct_mean)) +
 gg_poverty
 ```
 
-# Gross Rent-------------------------------
-```{r}
-(https://www.bls.gov/data/inflation_calculator.htm)
-
-gross_rent_change_df <- rent_burden_indc %>%
-  summarize(rent_burden_indc)
-```
 # Ownership-----------------------------------
 ```{r}
 owner_occ <- census_ %>%
@@ -204,6 +201,7 @@ owner_occ <- census_ %>%
 gg_owner_occ <- ggplot(owner_occ, aes(x = year, y = pct_owner_occ_mean)) +
   geom_bar(stat="identity") +
   scale_y_continuous(labels = scales::percent) +
+    scale_x_continuous(label = c(0, 2009, 2014, 2019))+
    #geom_text(aes(label=pct_owner_occ_mean), vjust=-0.3, size=3.5)+
   labs(title = "Percent of total Occupied Units that are Owner Occupied",
        x = "Year",
