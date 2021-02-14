@@ -30,8 +30,8 @@ census_19 <- get_acs(
   county = (081),
   tract = c(553, 555, 557, 559),
   year = 2019,
-  survey = "acs5",
   output = "wide",
+  survey = "acs5",
   geometry = FALSE,
   variables = c(
     "pop" = "B01003_001",
@@ -85,7 +85,6 @@ census_14 <- get_acs(
 ```
 ```{r}
 ## loading the 2009-2005 survey ***NOT ALL THE CENSUS TRACTS ARE THERE**
-#v9 <- load_variables(20, "acs5", cache = TRUE)
 census_09 <- get_acs(
   geography = "tract",
   state = "NY",
@@ -115,28 +114,40 @@ census_09 <- get_acs(
                     36081055900))
 ```
 ```{r}
-# # Joining the Two ** CANT USE THIS YET
-# census_10_19 <- census_19 %>% 
-#   left_join(census_14, by = "GEOID") %>%
-#   left_join(census_09, by = "GEOID") 
-```
-```{r}
 # Joining the Two ** CANT USE THIS YET
 census_ <-  census_19 %>% 
   bind_rows(census_14, census_09) 
 
 write.csv(census_,"/Users/alanapogostin/Desktop/Urban_Planning_Methods/south_ridgewood_census.csv", row.names = FALSE)
 ```
+# 2015-2019 Data Wrangling
+```{r}
+rent_burden_indc <- census_ %>%
+  select("year","gross_rent_medE", "hh_inc_medE", "rent_burden_medE") %>%
+  group_by(year) %>%
+  summarise(gross_rent_med_mean = mean(gross_rent_medE),
+            hh_inc_med_mean = mean(hh_inc_medE),
+            rent_burden_med = mean(rent_burden_medE),
+            )
+rent_burden_indc <- rent_burden_indc %>%
+  mutate(gross_rent_med_mean_change = ((gross_rent_med_mean) - first(gross_rent_med_mean))/ first(gross_rent_med_mean) * 100)
+
+```
+# Rent Burden
+```{r}
+rent_burden_indc <- rent_burden_indc %>%
+  mutate(gross_rent_med_mean_change = ((gross_rent_med_mean) - first(gross_rent_med_mean))/ first(gross_rent_med_mean) * 100)
+
+```
+# Population Pyramid-----------------------------------------------
 #Pulling acs data to make base dataframe for the population pyramid
 ```{r}
-age_by_sex <- get_acs(geography = "tract", 
-                      geography = "tract",
+age_by_sex <- get_acs(geography = "tract",
                       state = "NY",
-  county = (081),
-  year = 2014,
-  survey = "acs5",
-  output = "wide",
-  geometry = FALSE,
+                      county = (081),
+                      year = 2019,
+                      survey = "acs5",
+                      geometry = FALSE,
                       variables = c("m_0_4" = "B01001_003",
                                     "m_5_9"= "B01001_004",
                                     "m_10_14" = "B01001_005",
@@ -182,34 +193,13 @@ age_by_sex <- get_acs(geography = "tract",
                                     "f_70_74" = "B01001_046",
                                     "f_75_79" = "B01001_047",
                                     "f_80_84" = "B01001_048",
-                                    "f_85p" = "B01001_049"), 
-                      year = 2019,
-                      state = "NY", county = "081",survey = "acs5") %>% 
+                                    "f_85p" = "B01001_049")) %>% 
   filter(GEOID %in% c(36081055500,
                     36081055300,
                     36081055700,
                     36081055900)) #narrowing to just the south ridgewood tracts
 ```
-# 2015-2019 Data Wrangling
-```{r}
-rent_burden_indc <- census_ %>%
-  select("year","gross_rent_medE", "hh_inc_medE", "rent_burden_medE") %>%
-  group_by(year) %>%
-  summarise(gross_rent_med_mean = mean(gross_rent_medE),
-            hh_inc_med_mean = mean(hh_inc_medE),
-            rent_burden_med = mean(rent_burden_medE),
-            )
-rent_burden_indc <- rent_burden_indc %>%
-  mutate(gross_rent_med_mean_change = ((gross_rent_med_mean) - first(gross_rent_med_mean))/ first(gross_rent_med_mean) * 100)
 
-```
-# Rent Burden
-```{r}
-rent_burden_indc <- rent_burden_indc %>%
-  mutate(gross_rent_med_mean_change = ((gross_rent_med_mean) - first(gross_rent_med_mean))/ first(gross_rent_med_mean) * 100)
-
-```
-# Population Pyramid-----------------------------------------------
 ```{r}
 # First step of cleaning
 age_by_sex_clean  <- age_by_sex %>%
@@ -221,7 +211,7 @@ age_by_sex_clean  <- age_by_sex %>%
   spread(GEOID, estimate) %>% 
   # sum up the population in different sex and age group in the selected tracts 
   # *Note: for column names with pure number or with space in the name - add the `` sign to specify it's a column name
-  mutate(neighborhood_total = `36047005300` + `36047005900` + `36047008500`) %>% 
+  mutate(neighborhood_total = 36081055500 + 36081055300 + 36081055700,36081055900) %>% 
   # keep only the variable name and total population of different sex and age group
   select(variable, neighborhood_total) 
 
@@ -284,14 +274,12 @@ age_by_sex_dataframe <- age_by_sex_dataframe %>%
 pop_pyramid <- ggplot(age_by_sex_dataframe, aes(x = age_group, y = value, fill = Gender)) + 
   # plot the age by sex data frame with bar graphs
   geom_bar(stat = "identity") +
-  scale_y_continuous(limits = c(-0.1,0.1), breaks = seq(-0.1, 0.1, 0.02), labels = abs(seq(-0.1, 0.1, 0.02)))+
-  # set the x and y axis displayed names
-  xlab("Age Group") +
-  ylab("Percentage") +
-  # set the title text
-  ggtitle("Population Pyramid - Red Hook, ACS 2014-2018")+
-  # turn the graph 90 degrees to make it into a population pyramid
-  coord_flip()
+  scale_y_continuous(limits = c(-0.1,0.1), breaks = seq(-0.1, 0.1, 0.02), labels = scales::percent)+
+    coord_flip() +
+  labs(x = "Age Group",
+       y = "Percentage",
+       title = ("Population Pyramid - South Ridgewood, ACS 2015-2019")
+       ) 
 
 # show the plot
 pop_pyramid
