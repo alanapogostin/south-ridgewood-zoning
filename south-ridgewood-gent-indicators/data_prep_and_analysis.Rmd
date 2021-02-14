@@ -315,13 +315,11 @@ gg_pop_change
 # Poverty
 ```{r}
 poverty <- census_ %>%
-  select("year", "pov_pctE", "occ_ownerE", "popE") %>%
   group_by(year) %>%
   summarise(pov = sum(pov_pctE),
             pop = sum(popE),
             pov_pct =(pov/pop)
             )
-gg_poverty <- ggplot(poverty, aes(x = year, y = pov_pct_mean)) +
   geom_bar(stat="identity") +
   scale_y_continuous(labels = scales::percent,
                      n.breaks = 10) +
