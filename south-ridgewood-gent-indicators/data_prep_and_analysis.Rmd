@@ -268,6 +268,12 @@ age_by_sex_dataframe <- age_by_sex_dataframe %>%
   # add the level to different age groups so that it will come out with proper order
   mutate(age_group = fct_relevel(age_group, age_level))
 
+#Summary stats
+total_gender <- age_by_sex_dataframe %>%
+  select("Gender", "value") %>%
+  group_by(Gender)%>%
+  summarize(total = sum(value))
+
 
 # set up the plot, the dataset name, x axis will be age group, and y axis will be percentage 
 # we also fill the bars with colors based on gender information
@@ -275,7 +281,7 @@ pop_pyramid <- ggplot(age_by_sex_dataframe, aes(x = age_group, y = value, fill =
   # plot the age by sex data frame with bar graphs
   geom_bar(stat = "identity") +
   scale_y_continuous(limits = c(-0.1,0.1), breaks = seq(-0.1, 0.1, 0.02), labels = scales::percent)+
-    coord_flip() +
+    coord_flip()
   labs(x = "Age Group",
        y = "Percentage",
        title = ("Population Pyramid - South Ridgewood, ACS 2015-2019")
@@ -292,12 +298,12 @@ pop_change <- census_ %>%
   group_by(year) %>%
   summarise(pop = sum(popE))
 
-gg_pop_change <- ggplot(pop_change, aes(x = year, y = pop)) +
+gg_pop_change <- ggplot(pop_change, aes(x = as.numeric(year), y = pop)) +
   geom_bar(stat="identity") +
   scale_y_continuous(n.breaks = 10) +
   scale_x_continuous(label = c(0, 2009, 2014, 2019))+
-  #scale_x_continuous(labels = as.character(year))+
-  # geom_text(aes(label=pov_pct_mean), vjust=-0.3, size=3.5)+
+  #scale_x_continuous(labels = "year")+
+  geom_text(aes(label=pop), vjust=-0.3, size=3.5)+
   labs(title = "Population of Southern Ridgewood",
        x = "Year",
        y = "Number of Residents") +
@@ -311,15 +317,15 @@ gg_pop_change
 poverty <- census_ %>%
   select("year", "pov_pctE", "occ_ownerE", "popE") %>%
   group_by(year) %>%
-  summarise(pov_mean = mean(pov_pctE),
-            pov_pct_mean = (pov_mean/100/100)
+  summarise(pov = sum(pov_pctE),
+            pop = sum(popE),
+            pov_pct =(pov/pop)
             )
 gg_poverty <- ggplot(poverty, aes(x = year, y = pov_pct_mean)) +
   geom_bar(stat="identity") +
   scale_y_continuous(labels = scales::percent,
                      n.breaks = 10) +
   scale_x_continuous(label = c(0, 2009, 2014, 2019))+
-  # geom_text(aes(label=pov_pct_mean), vjust=-0.3, size=3.5)+
   labs(title = "Poverty Rate in Southern Ridgewood",
        x = "Year",
        y = "Poverty Rate (%)") +
