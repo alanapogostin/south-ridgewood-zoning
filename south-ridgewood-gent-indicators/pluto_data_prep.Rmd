@@ -1,0 +1,29 @@
+---
+title: "pluto_data_prep"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#Importing the PLUTO data
+library(tidyverse)
+pluto_20v8 <- read_csv("~/Desktop/Urban_Planning_Methods/pluto_20v8.csv")
+```
+# Filtering by my census tracts
+```{r }
+## listing out the census tracts
+# 36081055500,
+# 36081055300,
+# 36081055700,
+# 36081055900
+south_ridge_tracts <- c("55",
+                    "53",
+                    "57",
+                    "59")
+
+pluto_cleaned <- pluto_20v8 %>%
+  filter(borough %in% "BK" & ct2010 %in% south_ridge_tracts)
+
+write_csv(pluto_cleaned, file = "~/Desktop/Urban_Planning_Methods/pluto_cleaned.csv")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
