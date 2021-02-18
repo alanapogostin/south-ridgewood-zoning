@@ -15,15 +15,16 @@ pluto_20v8 <- read_csv("~/Desktop/Urban_Planning_Methods/pluto_20v8.csv")
 # 36081055300,
 # 36081055700,
 # 36081055900
-south_ridge_tracts <- c("55",
-                    "53",
-                    "57",
-                    "59")
+south_ridge_tracts <- c("555",
+                    "553",
+                    "557",
+                    "559")
 
 pluto_cleaned <- pluto_20v8 %>%
-  filter(borough %in% "BK" & ct2010 %in% south_ridge_tracts)
+  filter(borough %in% "QN" & ct2010 %in% south_ridge_tracts)
 
-write_csv(pluto_cleaned, file = "~/Desktop/Urban_Planning_Methods/pluto_cleaned.csv")
+write.csv(pluto_cleaned, file = "~/Desktop/Urban_Planning_Methods/pluto_cleaned_lab3_1.csv", na = "")
 ```
-
+```
+```
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
